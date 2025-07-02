@@ -1,7 +1,6 @@
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.3'
-    id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.learn.e_commerce'
@@ -11,9 +10,8 @@ repositories {
     mavenCentral()
 }
 
-subprojects {
+allprojects {
     apply plugin: 'java'
-    apply plugin: 'io.spring.dependency-management'
 
     group = rootProject.group
     version = rootProject.version
@@ -25,16 +23,16 @@ subprojects {
     }
 
     dependencies {
-        compileOnly 'org.projectlombok:lombok'
-        annotationProcessor 'org.projectlombok:lombok'
+        compileOnly 'org.projectlombok:lombok:1.18.32'
+        annotationProcessor 'org.projectlombok:lombok:1.18.32'
         implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa:3.5.3'
+        implementation 'org.postgresql:postgresql:42.7.7'
     }
 }
 
 dependencies {
     implementation project(':product-categories')
-    implementation 'org.springframework.boot:spring-boot-starter-web:3.5.3'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 }
 
 springBoot {

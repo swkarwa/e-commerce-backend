@@ -15,9 +15,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
+@RequestMapping("/api")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -38,15 +38,15 @@ public class CategoryController {
                             description = "Successful retrieval of categories",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = Category.class)
+                                    schema = @Schema(implementation = com.learn.e_commerce.model.Category.class)
                             )
                     )
             })
     // Swagger doc end
 
-    @GetMapping(value = "/api/public/categories", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Category>> getCategories() {
-        List<Category> categories = categoryService.getAllCategories();
+    @RequestMapping(value = "/public/categories", method = RequestMethod.GET)
+    public ResponseEntity<List<com.learn.e_commerce.model.Category>> getCategories() {
+        List<com.learn.e_commerce.model.Category> categories = categoryService.getAllCategories();
         return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 
@@ -70,8 +70,9 @@ public class CategoryController {
             }
     )
     // Swagger doc end
-    @PostMapping("/api/admin/category")
-    public ResponseEntity<String> addCategory(@RequestBody Category category) {
+
+    @RequestMapping(value = "/admin/category", method = RequestMethod.POST)
+    public ResponseEntity<String> addCategory(@RequestBody com.learn.e_commerce.model.Category category) {
 
         categoryService.createCategory(category);
         return new ResponseEntity<>("Category created", HttpStatus.CREATED);
@@ -105,7 +106,7 @@ public class CategoryController {
             }
     )
     // Swagger doc end
-    @DeleteMapping("/api/admin/category/{categoryId}")
+    @RequestMapping(value = "/admin/category/{categoryId}", method = RequestMethod.DELETE)
     public ResponseEntity<String> deleteCategory(@PathVariable long categoryId) {
 
         String message = null;
@@ -116,5 +117,43 @@ public class CategoryController {
             return new ResponseEntity<>("Resource not found", HttpStatus.NOT_FOUND);
         }
 
+    }
+
+    // swagger doc
+    @Operation(
+            summary = "Update a category",
+            description = "Update a category by ID"
+    )
+
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully updated the category",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(type = "string", example = "Category updated successfully")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Category not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(type = "string", example = "Category not found")
+                            )
+                    )
+            }
+    )
+    // Swagger doc end
+
+    @RequestMapping(value = "/admin/category/{categoryId}", method = RequestMethod.PUT)
+    public ResponseEntity<Object> updateCategory(@PathVariable long categoryId, @RequestBody Category category) {
+        try {
+            Category updatedCategory = categoryService.updateCategory(categoryId, category);
+            return new ResponseEntity<>(updatedCategory, HttpStatus.OK);
+        } catch (ResponseStatusException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 }
